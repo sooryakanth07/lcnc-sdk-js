@@ -7,7 +7,7 @@ export default defineConfig({
 	base: "/lcnc-sdk-js",
 	integrations: [
 		starlight({
-			title: "Kissflow SDK docs",
+			title: "Kissflow SDK Docs",
 			social: {
 				github: "https://github.com/kissflow/lcnc-sdk-js"
 			},
