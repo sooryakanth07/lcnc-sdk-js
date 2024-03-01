@@ -34,10 +34,6 @@ export default defineConfig({
 					autogenerate: { directory: "app" }
 				},
 				{
-					label: "Process",
-					autogenerate: { directory: "process" }
-				},
-				{
 					label: "Formatter",
 					link: "/formatter"
 				}
