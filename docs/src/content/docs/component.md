@@ -2,22 +2,10 @@
 title: Custom Components
 description: Installing and using custom components
 ---
-Kissflow lets you build custom UI components and import them as reusable custom components in your app. You can use plain HTML or frontend frameworks like React to build your component. 
+Kissflow lets you build custom UI components and import them as reusable custom components in your app. You can use plain HTML or frontend frameworks like React to build your component. Read more to understand the SDK methods available inside custom components. 
 
-To make your component interact and communicate with your app, you can install the Kissflow SDK in your project. If you already have an existing project, you can follow [these](/lcnc-sdk-js/intro/installation/) instructions to install the SDK package.
+To learn about installing the Kissflow SDK inside custom components, follow [these](/lcnc-sdk-js/installation/) instructions.
 
-If you don't have an existing project, you can create a Kissflow custom component package using npm
-```js
-npm create kf-component
-```
-
-You'll be prompted to provide a name for you component and choose between HTML or React. Once installed, run the following commands:
-
-```js
-cd componentname
-npm install
-npm run dev
-```
 
 ### Watch Params
 
@@ -35,6 +23,6 @@ kf.context.watchParams(onParamsChange);
 
 :::note[Note]
 
-While using custom components make sure WatchParams is called only once. 
+While using custom components, make sure `WatchParams` is called only once. 
 
 :::
