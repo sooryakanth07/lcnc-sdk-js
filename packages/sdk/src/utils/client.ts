@@ -82,4 +82,50 @@ export class Client extends BaseSDK {
 	getImageUrl(imageValue: Record<string, unknown>) {
 		return this._postMessageAsync(LISTENER_CMDS.GET_IMAGE_URL, { imageValue });
 	}
+
+	/**
+	 * Open the file preview overlay for one or more files.
+	 *
+	 * @param file - A file object, an S3 key string, or an array of either.
+	 * Each file object should have `name`, `fileExtension`, and `key` properties.
+	 * A plain string is treated as an S3 key, with name and extension derived from it.
+	 * @param options - Optional settings.
+	 * @param options.index - Zero-based index of the file to show first (default: 0).
+	 * @returns A promise that resolves with `{ success: true }` when the preview opens.
+	 *
+	 * @example
+	 * // Single file object
+	 * await kf.client.previewFile({
+	 *   name: "report.pdf",
+	 *   fileExtension: "pdf",
+	 *   key: "acc123/flow456/file789",
+	 * });
+	 *
+	 * @example
+	 * // S3 key string
+	 * await kf.client.previewFile("acc123/flow456/report.pdf");
+	 *
+	 * @example
+	 * // Multiple files, start at second file
+	 * await kf.client.previewFile(
+	 *   [
+	 *     { name: "photo1.jpg", fileExtension: "jpg", key: "acc/img1" },
+	 *     { name: "photo2.png", fileExtension: "png", key: "acc/img2" },
+	 *   ],
+	 *   { index: 1 }
+	 * );
+	 */
+	previewFile(
+		file:
+			| { name: string; fileExtension: string; key: string; size?: number; duration?: number }
+			| string
+			| Array<{ name: string; fileExtension: string; key: string; size?: number; duration?: number } | string>,
+		options?: { index?: number }
+	) {
+		const files = Array.isArray(file) ? file : [file];
+		return this._postMessageAsync(LISTENER_CMDS.PREVIEW_FILE, {
+			files,
+			index: options?.index ?? 0,
+		});
+	}
 }
