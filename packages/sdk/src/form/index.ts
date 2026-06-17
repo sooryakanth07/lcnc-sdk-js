@@ -2,11 +2,13 @@ import { BaseSDK, LISTENER_CMDS } from "../core";
 
 export class Form extends BaseSDK {
 	private instanceId: string;
+	private flowId: string;
 	type: string;
-	constructor(instanceId: string) {
+	constructor(instanceId: string, flowId?: string) {
 		super();
 		this.type = "Form";
 		this.instanceId = instanceId;
+		this.flowId = flowId
 	}
 	toJSON() {
 		return this._postMessageAsync(LISTENER_CMDS.TO_JSON, {
@@ -21,8 +23,19 @@ export class Form extends BaseSDK {
 	}
 	updateField(args: object) {
 		return this._postMessageAsync(LISTENER_CMDS.UPDATE_FORM, {
+			flowId: this.flowId,
 			instanceId: this.instanceId,
 			data: args
+		});
+	}
+	getValidationErrors() {
+		return this._postMessageAsync(LISTENER_CMDS.GET_FORM_VALIDATION_ERRORS, {
+			instanceId: this.instanceId
+		});
+	}
+	getFormConfiguration() {
+		return this._postMessageAsync(LISTENER_CMDS.GET_FORM_CONFIGURATION, {
+			instanceId: this.instanceId
 		});
 	}
 	getTable(tableId: string) {
@@ -43,12 +56,14 @@ class Table extends BaseSDK {
 	// list of obj of rows
 	toJSON() {
 		return this._postMessageAsync(LISTENER_CMDS.TO_JSON, {
+			instanceId: this.instanceId,
 			tableId: this.tableId
 		});
 	}
 
 	getSelectedRows() {
 		return this._postMessageAsync(LISTENER_CMDS.GET_SELECTED_TABLE_ROWS, {
+			instanceId: this.instanceId,
 			tableId: this.tableId
 		})
 	}
@@ -57,7 +72,7 @@ class Table extends BaseSDK {
 		// list of TableForm class
 		return this._postMessageAsync(
 			LISTENER_CMDS.GET_TABLE_ROWS,
-			{ tableId: this.tableId },
+			{ instanceId: this.instanceId, tableId: this.tableId },
 			true, // has callBack
 			(data) => {
 				return data.map(
@@ -74,6 +89,7 @@ class Table extends BaseSDK {
 
 	addRow(rowObject: object) {
 		return this._postMessageAsync(LISTENER_CMDS.ADD_TABLE_ROW, {
+			instanceId: this.instanceId,
 			tableId: this.tableId,
 			rowObject
 		});
@@ -81,6 +97,7 @@ class Table extends BaseSDK {
 
 	addRows(rows: object[]) {
 		return this._postMessageAsync(LISTENER_CMDS.ADD_TABLE_ROWS, {
+			instanceId: this.instanceId,
 			tableId: this.tableId,
 			rows
 		});
@@ -88,6 +105,7 @@ class Table extends BaseSDK {
 
 	deleteRow(rowId: string) {
 		return this._postMessageAsync(LISTENER_CMDS.DELETE_TABLE_ROW, {
+			instanceId: this.instanceId,
 			tableId: this.tableId,
 			rows: [rowId],
 		});
@@ -95,6 +113,7 @@ class Table extends BaseSDK {
 
 	deleteRows(rows: string[]) {
 		return this._postMessageAsync(LISTENER_CMDS.DELETE_TABLE_ROW, {
+			instanceId: this.instanceId,
 			tableId: this.tableId,
 			rows
 		});

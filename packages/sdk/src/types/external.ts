@@ -170,6 +170,15 @@ export type ProcessDiscardItemOptions = {
   instanceId: string;
 };
 
+export type ProcessFieldOptions = {
+  instanceId: string;
+  activityInstanceId: string;
+  fieldId: string;
+  tableId?: string;
+  tableRowId?: string;
+};
+
+
 export type FetchOptions = {
   method?: string;
   body?: string | object;
@@ -218,6 +227,13 @@ export type DataformSubmitItemOptions = {
   viewId?: string;
 };
 
+export type DataformFieldOptions = {
+  instanceId: string;
+  fieldId: string;
+  tableId?: string;
+  tableRowId?: string;
+};
+
 // ============================================
 // Board Types
 // ============================================
@@ -255,5 +271,9 @@ export type BoardDiscardItemOptions = {
   instanceId: string;
 };
 
+export type BoardFieldOptions = {
+  instanceId: string;
+  fieldId: string;
+};
 
 

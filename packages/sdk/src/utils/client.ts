@@ -82,4 +82,61 @@ export class Client extends BaseSDK {
 	getImageUrl(imageValue: Record<string, unknown>) {
 		return this._postMessageAsync(LISTENER_CMDS.GET_IMAGE_URL, { imageValue });
 	}
+
+	/**
+	 * Open the platform's file picker, upload the selected file(s), and resolve
+	 * with their metadata.
+	 *
+	 * Custom components (iframes) cannot access the platform's authenticated upload
+	 * endpoints directly. This method opens the file picker in the parent window
+	 * (which has the required session), runs the full select → upload flow, and
+	 * resolves once all uploads settle with an array of the uploaded files'
+	 * metadata (each including `key`, `name`, `size`, `photos`, etc. — the same
+	 * shape consumed by `getImageUrl`).
+	 *
+	 * Always resolves with an array — a single-element array for single-file
+	 * pickers (e.g. `maxCount: 1` for `Image`), one entry per uploaded file for
+	 * multi-file pickers (e.g. `Attachment`). Resolves with `[]` if the user closes
+	 * the picker without completing any upload.
+	 *
+	 * @param options - File picker configuration (e.g. `fileExtensions`, `maxSize`,
+	 * `maxCount`, `imageProps`).
+	 * @returns A promise that resolves with an array of uploaded file metadata
+	 * objects (empty if the picker was closed without uploading anything).
+	 *
+	 * @example
+	 * const files = await kf.client.openFilePicker({ fileExtensions: ["JPG", "PNG"] });
+	 * if (files.length) onChange(files[0]); // single-file consumer (Image)
+	 *
+	 * @example
+	 * const files = await kf.client.openFilePicker({ maxCount: 10 });
+	 * if (files.length) onChange([...existing, ...files]); // multi-file consumer (Attachment)
+	 */
+	openFilePicker(options: Record<string, unknown>) {
+		return this._postMessageAsync(LISTENER_CMDS.FILEPICKER_OPEN, { options });
+	}
+
+	/**
+	 * Open the platform's file preview (lightbox) for one or more files.
+	 *
+	 * `files` always accepts an array — pass a single-element array for fields like
+	 * `Image`, or the full list for multi-file fields like `Attachment`. The host's
+	 * preview UI natively renders next/prev navigation across the array; the SDK
+	 * just passes the file list through, no extra navigation surface is needed here.
+	 *
+	 * @param args - Preview configuration.
+	 * @param args.files - Array of file metadata objects to preview.
+	 * @param args.indexOfFile - Index of the file to open the preview on (default: 0).
+	 * @returns A promise that resolves once the user closes the preview.
+	 *
+	 * @example
+	 * await kf.client.openFilePreview({ files: [imageFieldValue] });
+	 * await kf.client.openFilePreview({ files: attachmentFieldValue, indexOfFile: 2 });
+	 */
+	openFilePreview(args: { files: Record<string, unknown>[]; indexOfFile?: number }) {
+		return this._postMessageAsync(LISTENER_CMDS.FILEPREVIEW_OPEN, {
+			files: args.files,
+			indexOfFile: args.indexOfFile ?? 0
+		});
+	}
 }

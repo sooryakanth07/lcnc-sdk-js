@@ -1,4 +1,5 @@
 import { BaseSDK, LISTENER_CMDS } from "../core";
+import { Form } from "../form";
 import {
     ProcessItem,
     ProcessGetItemOptions,
@@ -17,7 +18,8 @@ import {
     ProcessReassignItemOptions,
     ProcessGetReassigneesOptions,
     ProcessRestartItemOptions,
-    ProcessDiscardItemOptions
+    ProcessDiscardItemOptions,
+    ProcessFieldOptions
 } from "../types/external";
 import { requireFieldAsync, requireFieldsAsync } from "../utils/validation";
 
@@ -64,15 +66,20 @@ export class Process extends BaseSDK {
      * // Get tasks for specific activity/step
      * const { items } = await process.getMyTasksItems({ activityId: "Approval_Step" });
      */
-    getMyTasksItems(options?: ProcessMyTasksOptions): Promise<ProcessQueryResponse> {
-        return this._postMessageAsync(LISTENER_CMDS.PROCESS_GET_MY_TASKS_ITEMS, {
-            flowId: this._id,
-            activityId: options?.activityId || "",
-            searchValue: options?.searchValue || "",
-            pageNumber: options?.pageNumber || 1,
-            pageSize: options?.pageSize || 50,
-            payload: options?.payload || {},
-        });
+    getMyTasksItems(
+        options?: ProcessMyTasksOptions
+    ): Promise<ProcessQueryResponse> {
+        return this._postMessageAsync(
+            LISTENER_CMDS.PROCESS_GET_MY_TASKS_ITEMS,
+            {
+                flowId: this._id,
+                activityId: options?.activityId || "",
+                searchValue: options?.searchValue || "",
+                pageNumber: options?.pageNumber || 1,
+                pageSize: options?.pageSize || 50,
+                payload: options?.payload || {}
+            }
+        );
     }
 
     /**
@@ -84,15 +91,20 @@ export class Process extends BaseSDK {
      * const process = kf.app.getProcess("LeaveRequest");
      * const { items } = await process.getParticipatedItems();
      */
-    getParticipatedItems(options?: ProcessParticipatedOptions): Promise<ProcessQueryResponse> {
-        return this._postMessageAsync(LISTENER_CMDS.PROCESS_GET_PARTICIPATED_ITEMS, {
-            flowId: this._id,
-            activityId: options?.activityId || "",
-            searchValue: options?.searchValue || "",
-            pageNumber: options?.pageNumber || 1,
-            pageSize: options?.pageSize || 50,
-            payload: options?.payload || {},
-        });
+    getParticipatedItems(
+        options?: ProcessParticipatedOptions
+    ): Promise<ProcessQueryResponse> {
+        return this._postMessageAsync(
+            LISTENER_CMDS.PROCESS_GET_PARTICIPATED_ITEMS,
+            {
+                flowId: this._id,
+                activityId: options?.activityId || "",
+                searchValue: options?.searchValue || "",
+                pageNumber: options?.pageNumber || 1,
+                pageSize: options?.pageSize || 50,
+                payload: options?.payload || {}
+            }
+        );
     }
 
     /**
@@ -104,13 +116,15 @@ export class Process extends BaseSDK {
      * const process = kf.app.getProcess("LeaveRequest");
      * const { items } = await process.getAdminItems();
      */
-    getAdminItems(options?: ProcessAdminOptions): Promise<ProcessQueryResponse> {
+    getAdminItems(
+        options?: ProcessAdminOptions
+    ): Promise<ProcessQueryResponse> {
         return this._postMessageAsync(LISTENER_CMDS.PROCESS_GET_ADMIN_ITEMS, {
             flowId: this._id,
             searchValue: options?.searchValue || "",
             pageNumber: options?.pageNumber || 1,
             pageSize: options?.pageSize || 50,
-            payload: options?.payload || {},
+            payload: options?.payload || {}
         });
     }
 
@@ -196,7 +210,10 @@ export class Process extends BaseSDK {
     openForm(item: ProcessItem) {
         const error = requireFieldsAsync([
             { value: item._id, name: "Instance Id (_id)" },
-            { value: item._activity_instance_id, name: "Activity Instance Id (_activity_instance_id)" }
+            {
+                value: item._activity_instance_id,
+                name: "Activity Instance Id (_activity_instance_id)"
+            }
         ]);
         if (error) return error;
         return this._postMessageAsync(LISTENER_CMDS.PROCESS_OPEN_FORM, {
@@ -399,11 +416,14 @@ export class Process extends BaseSDK {
      * @param options - activityId of the target step
      */
     getParticipatedFields(options: { activityId: string }): Promise<any> {
-        return this._postMessageAsync(LISTENER_CMDS.PROCESS_GET_PARTICIPATED_FIELDS, {
-            flowId: this._id,
-            activityId: options.activityId,
-            isParticipated: true
-        });
+        return this._postMessageAsync(
+            LISTENER_CMDS.PROCESS_GET_PARTICIPATED_FIELDS,
+            {
+                flowId: this._id,
+                activityId: options.activityId,
+                isParticipated: true
+            }
+        );
     }
 
     /**
@@ -411,12 +431,14 @@ export class Process extends BaseSDK {
      * @param options - status filter (e.g. "draft", "inprogress", "all")
      */
     getMyItemsFields(options: { status: string }): Promise<any> {
-        return this._postMessageAsync(LISTENER_CMDS.PROCESS_GET_MY_ITEMS_FIELDS, {
-            flowId: this._id,
-            status: options.status
-        });
+        return this._postMessageAsync(
+            LISTENER_CMDS.PROCESS_GET_MY_ITEMS_FIELDS,
+            {
+                flowId: this._id,
+                status: options.status
+            }
+        );
     }
-
 
     /**
      * Get the progress/timeline of a process instance
@@ -429,5 +451,49 @@ export class Process extends BaseSDK {
             flowId: this._id,
             instanceId: options.instanceId
         });
+    }
+
+    /**
+     * Initialize a form with all necessary data (schema, item data, form store)
+     * This is the recommended way to create a custom form for dataform records
+     * It automatically handles fetching schema, item data, and initializing the form store
+     *
+     * @param instanceId - Optional instance ID of the dataform record. If omitted, creates a new record
+     * @returns Promise with Form instance ready to use
+     *
+     * @example
+     * // Load existing record
+     * const dataform = kf.app.getDataform("EmpMaster");
+     * const form = await dataform.initForm("emp_123");
+     * const data = await form.toJSON();
+     *
+     * // Create new record
+     * const form = await dataform.initForm();
+     * await form.updateField({ firstName: "John" });
+     */
+    initForm(instanceId?: string): Promise<Form> {
+        return this._postMessageAsync(LISTENER_CMDS.PROCESS_INIT_FORM, {
+            flowId: this._id,
+            instanceId: instanceId || ""
+        }).then((response: any) => {
+            // The response contains the storeId, return a Form instance
+            return new Form(response.storeId || instanceId || "", this._id);
+        });
+    }
+
+    getFieldOptions(
+        options?: ProcessFieldOptions
+    ): Promise<ProcessQueryResponse> {
+        return this._postMessageAsync(
+            LISTENER_CMDS.DATAFORM_GET_FIELD_OPTIONS,
+            {
+                flowId: this._id,
+                instanceId: options?.instanceId || "",
+                activityInstanceId: options?.activityInstanceId,
+                fieldId: options?.fieldId || "",
+                tableId: options?.tableId,
+                tableRowId: options?.tableRowId
+            }
+        );
     }
 }
