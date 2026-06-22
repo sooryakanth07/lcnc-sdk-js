@@ -2,7 +2,7 @@
 title: Set Variable
 description: Updates new value to the variable.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 This command lets you update the value of a global variable used in the app.

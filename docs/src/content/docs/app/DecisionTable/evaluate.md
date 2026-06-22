@@ -1,37 +1,19 @@
 ---
-title: Decision table
-description: Usage of Decision table
+title: Evaluate
+description: Evaluate a decision table
+sidebar:
+  order: 58
 ---
 
-A decision table is a systematic and structured representation of complex
-business logic or decision-making processes.
+From the instance you can evaluate the decision table using the `evaluate` method.
 
-Get a decision table instance using `getDecisionTable` from app's interface.
+### Parameters
 
-##### Parameters
-
-| Parameter       | type   |
-| --------------- | ------ |
-| decisionTableId | String |
-
-##### Syntax
-
-```js
-let decisionTableInstance = kf.app.getDecisionTable(decisionTableId);
-```
-
-### Evaluate
-
-From the instance you can able to evaluate the decision table using `evaluate`
-method.
-
-##### Parameters
-
-| Parameter | type   | Description                                                          |
+| Parameter | Type   | Description                                                          |
 | --------- | ------ | -------------------------------------------------------------------- |
 | payload   | Object | An object with keys as condition field id and its respective values. |
 
-##### Syntax
+### Syntax
 
 ```js
 let decisionTableInstance = kf.app.getDecisionTable(decisionTableId);
@@ -39,11 +21,11 @@ let payload = { conditionField1: "value", conditionField2: "value" };
 await decisionTableInstance.evaluate(payload);
 ```
 
-##### Return
+### Returns
 
 Returns a decision table output.
 
-##### Example
+### Example
 
 To evaluate if a loan request can be approved or not using a decision table (ID:
 Loan_decision_table), specify the relevant condition IDs (conditionField1,

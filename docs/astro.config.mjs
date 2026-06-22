@@ -28,7 +28,7 @@ export default defineConfig({
                 },
                 {
                     label: 'Utilities',
-                    link: '/utils',
+                    autogenerate: { directory: 'utils' },
                 },
                 {
                     label: 'Context',
